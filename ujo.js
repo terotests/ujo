@@ -253,17 +253,14 @@
     
                             var me = options.obj,
                                 rawData = parentObj;
-                            console.log("Got mv command ")
+
                             if(chData.isArray(rawData.data) && (parentObj.__id == me.__id)) {
-                                console.trace();
-                                console.log(rawData.data);
+
                                 var len = rawData.data.length;
                                 
                                 // just re-index the properties of the object
                                 for(var i = 0; i < len; i++) {
                                     ( function(key) {
-                                        console.log("Setting key ", key, " to ");
-                                        console.log(me);
                                         Object.defineProperty(me, key, {
                                           configurable : true,
                                           enumerable : true,
@@ -340,19 +337,7 @@
                   Object.keys(rawData.data).forEach(
                       function(key) {
                           if(!chData.isObject(rawData.data[key])) {
-                              if(!_my_proto_[key]) {
-                                  if(!getters[key]) {
-                                      getters[key] = function() {
-                                        return this.__raw.data[key];
-                                    }
-                                  }
-                                  Object.defineProperty(_my_proto_, key, {
-                                    enumerable: false,
-                                    get: getters[key],
-                                    set: function(value) {
-                                    }
-                                  });
-                              }
+                              // array with scalar values is not defined
                           } else {
                               if(rawData.data[key]) {
     
@@ -371,18 +356,16 @@
                           function(key) {
                               if(!chData.isObject(rawData.data[key])) {
                                   try {
-                                      if(typeof(_my_proto_[key]) == "undefined") {
-                                          if(!getters[key]) {
-                                              getters[key] = function() {
-                                                return this.__raw.data[key];
-                                            }
-                                          }
-                                          Object.defineProperty(me, key, {
-                                            enumerable: true,
-                                            get: getters[key],
-                                            set: _nop_fn
-                                          });
+                                      if(!getters[key]) {
+                                          getters[key] = function() {
+                                            return this.__raw.data[key];
+                                        }
                                       }
+                                      Object.defineProperty(me, key, {
+                                        enumerable: true,
+                                        get: getters[key],
+                                        set: _nop_fn
+                                      });
                                   } catch(e) {
                                       console.log(e.message);
                                   }
